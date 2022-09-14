@@ -1,4 +1,4 @@
-package cn.wanans.response.config;
+package cn.wanans.response.advice;
 
 import cn.wanans.response.annotation.EnAndDecrypt;
 import cn.wanans.response.annotation.Encrypt;
@@ -15,7 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
@@ -32,7 +31,7 @@ import java.util.Objects;
 @Order(1)
 @EnableConfigurationProperties(EncryptProperties.class)
 @ConditionalOnProperty(prefix = "spring.response.encrypt", value = "enabled", havingValue = "true")
-@RestControllerAdvice(annotations = RestController.class)
+@RestControllerAdvice
 public class EncryptResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 
     @Autowired
@@ -41,7 +40,6 @@ public class EncryptResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
-
         //如果返回为空，不进行加密
         if (returnType.getParameterType().isAssignableFrom(Void.TYPE)) {
             return Boolean.FALSE;

@@ -1,4 +1,4 @@
 
 #auto configure
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-cn.wanans.response.config.EncryptResponseBodyAdvice
+cn.wanans.response.advice.EncryptResponseBodyAdvice
