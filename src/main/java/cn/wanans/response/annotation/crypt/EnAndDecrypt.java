@@ -1,4 +1,4 @@
-package cn.wanans.response.annotation;
+package cn.wanans.response.annotation.crypt;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

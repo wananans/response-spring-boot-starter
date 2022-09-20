@@ -1,4 +1,6 @@
-package cn.wanans.response.annotation;
+package cn.wanans.response.annotation.crypt;
+
+
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -8,10 +10,11 @@ import java.lang.annotation.Target;
 
 /**
  * @author w
- * @since 2022-09-13
+ * @since 2022-09-22
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD})
+@Target({ElementType.METHOD,ElementType.PARAMETER})
 @Documented
-public @interface NotEncrypt {
+public @interface Decrypt {
+
 }

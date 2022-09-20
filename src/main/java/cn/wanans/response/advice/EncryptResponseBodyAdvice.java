@@ -1,13 +1,15 @@
 package cn.wanans.response.advice;
 
-import cn.wanans.response.annotation.EnAndDecrypt;
-import cn.wanans.response.annotation.Encrypt;
-import cn.wanans.response.annotation.NotEncrypt;
+import cn.wanans.response.annotation.crypt.EnAndDecrypt;
+import cn.wanans.response.annotation.crypt.Encrypt;
+import cn.wanans.response.annotation.crypt.NotEncrypt;
 import cn.wanans.response.properties.EncryptProperties;
-import cn.wanans.response.utils.AESUtil;
+import cn.wanans.response.utils.AESUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.Order;
@@ -28,8 +30,10 @@ import java.util.Objects;
  * @author w
  * @since 2022-09-13
  */
+@Slf4j
 @Order(1)
 @EnableConfigurationProperties(EncryptProperties.class)
+@ConditionalOnWebApplication
 @ConditionalOnProperty(prefix = "spring.response.encrypt", value = "enabled", havingValue = "true")
 @RestControllerAdvice
 public class EncryptResponseBodyAdvice implements ResponseBodyAdvice<Object> {
@@ -63,14 +67,16 @@ public class EncryptResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 
         try {
             if (Objects.nonNull(body)) {
+                ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+                String path = request.getURI().getPath();
+                log.info("[{},加密,原始返回数据:]\n{}", path, objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(body));
                 if (body instanceof String) {
                     //如果返回是String类型，直接加密
-                    encrypt = AESUtil.encrypt(body.toString().getBytes(StandardCharsets.UTF_8), keyBytes);
+                    encrypt = AESUtils.encrypt(body.toString().getBytes(StandardCharsets.UTF_8), keyBytes);
                 } else {
                     //如果返回是对象类型，先转换为json再加密
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
-                    encrypt = AESUtil.encrypt(objectMapper.writeValueAsString(body).getBytes(StandardCharsets.UTF_8), keyBytes);
+                    encrypt = AESUtils.encrypt(objectMapper.writeValueAsString(body).getBytes(StandardCharsets.UTF_8), keyBytes);
                 }
             }
         } catch (Exception e) {

@@ -9,7 +9,7 @@ import java.util.Base64;
  * @author w
  * @since 2022-09-13
  */
-public class AESUtil {
+public class AESUtils {
 
 
     /**
