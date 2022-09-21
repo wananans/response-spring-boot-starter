@@ -6,7 +6,6 @@ import cn.wanans.response.properties.EncryptProperties;
 import cn.wanans.response.utils.AESUtils;
 import cn.wanans.response.utils.WebUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -19,10 +18,12 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.RequestBodyAdviceAdapter;
 
+import javax.annotation.Resource;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -30,7 +31,7 @@ import java.util.Objects;
  * 参数解密
  *
  * @author w
- * @since 2022-09-22
+ * @since 2022-09-20
  */
 @Slf4j
 @Order(0)
@@ -40,7 +41,7 @@ import java.util.Objects;
 @RestControllerAdvice
 public class DecryptRequestBodyAdviceAdapter extends RequestBodyAdviceAdapter {
 
-    @Autowired
+    @Resource
     private EncryptProperties encryptProperties;
 
     @Override
@@ -64,7 +65,9 @@ public class DecryptRequestBodyAdviceAdapter extends RequestBodyAdviceAdapter {
 
         try {
             byte[] decrypt = AESUtils.decrypt(body, encryptProperties.getKey().getBytes());
-
+            String s = new String(decrypt, StandardCharsets.UTF_8);
+            String servletPath = WebUtils.getRequest().getServletPath();
+            log.info("[{}->[解密],原始请求数据:{}]", servletPath, s);
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(decrypt);
 
             return new HttpInputMessage() {

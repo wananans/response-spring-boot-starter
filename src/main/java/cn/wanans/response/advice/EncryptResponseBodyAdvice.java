@@ -70,7 +70,7 @@ public class EncryptResponseBodyAdvice implements ResponseBodyAdvice<Object> {
                 ObjectMapper objectMapper = new ObjectMapper();
                 objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
                 String path = request.getURI().getPath();
-                log.info("[{},加密,原始返回数据:]\n{}", path, objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(body));
+                log.info("[{}->[加密],原始返回数据:{}]", path, objectMapper.writeValueAsString(body));
                 if (body instanceof String) {
                     //如果返回是String类型，直接加密
                     encrypt = AESUtils.encrypt(body.toString().getBytes(StandardCharsets.UTF_8), keyBytes);
